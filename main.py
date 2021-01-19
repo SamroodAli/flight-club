@@ -1,6 +1,6 @@
 from data_manager import DataManager
 from flight_search import FlightSearch
-
+from datetime import datetime, timedelta
 
 # Instances needed
 data_manager = DataManager()
@@ -15,3 +15,8 @@ if sheet_data[0]["iataCode"]=="":
     # Update sheets data
     data_manager.sheets_data = sheet_data
     data_manager.update_sheets_data()
+
+
+# Get dates
+tomorrow = datetime.now() + timedelta(days=1)
+six_months_from_now = tomorrow + timedelta(days=6*30)
