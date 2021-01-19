@@ -9,10 +9,24 @@ class DataManager:
         self.username = os.environ.get("SHEETY_USERNAME")
         self.password = os.environ.get("SHEETY_PASSWORD")
 
-        self.destination_data = {}
+        self.sheets_data = {}
 
-    def get_destination_data(self):
+    def get_sheets_data(self):
         response = requests.get(url=self.endpoint, auth=(self.username, self.password))
         data = response.json()
-        self.destination_data = data["prices"]
-        return self.destination_data
+        self.sheets_data = data["prices"]
+        return self.sheets_data
+
+    def update_sheets_data(self):
+        for city in self.sheets_data:
+            new_data = {
+                "price":{
+                    "iataCode": city["iataCode"]
+                }
+            }
+            response = requests.put(
+                url=f"{self.endpoint}/{city['id']}",
+                json=new_data,
+                auth=(self.username, self.password)
+            )
+            print(response.text)
