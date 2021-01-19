@@ -44,9 +44,22 @@ class FlightSearch:
         response = requests.get(
             url=f"{self.flights_search_api_endpoint}",
             params=api_parameters,
-            headers = self.headers
+            headers=self.headers
         )
 
         data = response.json()["data"][0]
 
         print(data["price"])
+        print(data["route"][0]["cityFrom"])
+        # Flight data
+        flight_data = {
+            "price": data["price"],
+            "origin_city": data["route"][0]["cityFrom"],
+            "origin_airport": data["route"][0]["flyFrom"],
+            "destination_city": data["route"][0]["cityTo"],
+            "destination_airport": data["route"][0]["flyTo"],
+            "travel_data": data["route"][0]["local_departure"].split("T")[0],
+            "return_date": data["route"][1]["local_departure"].split("T")[0],
+        }
+        print(f"{flight_data['destination_city']},{flight_data['price']}")
+        return flight_data
