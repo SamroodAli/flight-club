@@ -11,13 +11,16 @@ flight_search = FlightSearch()
 # To alert user via sms using Twilio api
 notification_manager = NotificationManager()
 
-sheet_data = data_manager.get_sheets_data()
+# Get destination_data
+destinations_data = data_manager.get_destinations_data()
+# Get users data
+users_data = data_manager.get_users_data()
 
-if sheet_data[0]["iataCode"] == "":
-    for row in sheet_data:
+if destinations_data[0]["iataCode"] == "":
+    for row in destinations_data:
         row["iataCode"] = flight_search.get_iata_code(row["city"])
     # Update sheets data
-    data_manager.sheets_data = sheet_data
+    data_manager.destination_data = destinations_data
     data_manager.update_sheets_data()
 
 
@@ -29,7 +32,8 @@ six_months_from_now = tomorrow + timedelta(days=6*30)
 origin_city_code = "LON"
 flight_data_currency = "GBP"
 
-for destination in sheet_data:
+
+for destination in destinations_data:
     flight = flight_search.check_flights(
         origin_city_code=origin_city_code,
         destination_city_code=destination["iataCode"],
@@ -40,7 +44,9 @@ for destination in sheet_data:
     if flight is not None:
         message = f"Flight deal alert\n Only {flight_data_currency} {flight['price']} to fly from {flight['origin_city']}-{flight['origin_airport']} to {flight['destination_city']}-{flight['destination_airport']}, from {flight['travel_date']} to {flight['return_date']}."
         if flight["stop_overs"] > 0:
-            message += f"\nThe flight has {flight['stop_overs']} stop over, via {flight['via_city']}"
+            message += f"\nThe flight has {flight['stop_overs']} stop over, via {flight['via_city']}."
         print(message)
+
+        notification_manager.send_mails(message=message)
     # if flight["price"] < destination["lowestPrice"]:
         # notification_manager.send_sms(message=f"Flight deal alert\n Only {flight_data_currency} {flight['price']} to fly from {flight['origin_city']}-{flight['origin_airport']} to {flight['destination_city']}-{flight['destination_airport']}, from {flight['travel_date']} to {flight['return_date']}")
