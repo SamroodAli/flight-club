@@ -26,13 +26,14 @@ class NotificationManager:
         )
         print(message.sid)
 
-    def send_mails(self, message):
+    def send_mails(self, emails, message, google_link):
         with smtplib.SMTP("smtp.live.com") as connection:
             connection.starttls()
             connection.login(user=my_email, password=password)
-            connection.sendmail(
-                from_addr=my_email,
-                to_addrs="samrood.kl@gmail.com",
-                msg=message
-            )
+            for user in emails:
+                connection.sendmail(
+                    from_addr=my_email,
+                    to_addrs="samrood.kl@gmail.com",
+                    msg=f"Subject:Flight deal from Flight Club\n\n{message}\nlink:{google_link}".encode("utf-8")
+                )
 
