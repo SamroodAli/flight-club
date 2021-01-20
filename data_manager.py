@@ -13,6 +13,7 @@ class DataManager:
 
     def get_sheets_data(self):
         response = requests.get(url=self.endpoint, auth=(self.username, self.password))
+        response.raise_for_status()
         data = response.json()
         self.sheets_data = data["prices"]
         return self.sheets_data
@@ -20,7 +21,7 @@ class DataManager:
     def update_sheets_data(self):
         for city in self.sheets_data:
             new_data = {
-                "price":{
+                "price": {
                     "iataCode": city["iataCode"]
                 }
             }
